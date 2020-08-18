@@ -1,0 +1,133 @@
+Sub Convert_Click()
+
+Dim n As Integer
+
+n = Application.WorksheetFunction.CountA(Range("a:a"))  ' To stop on empty raw
+
+For k = 3 To 10  ' Number of culomns
+  For i = 2 To n  ' Number of raws
+  
+   If Worksheets("Sheet1").Cells(i, k).Value >= 90 Then
+   Worksheets("Sheet2").Cells(i, k).Value = Sheets(Sheet3.Name).Range("A1").Value
+  
+   ElseIf Worksheets("Sheet1").Cells(i, k).Value >= 80 Then
+   Worksheets("Sheet2").Cells(i, k).Value = Sheets(Sheet3.Name).Range("A2").Value
+   
+   ElseIf Worksheets("Sheet1").Cells(i, k).Value >= 70 Then
+   Worksheets("Sheet2").Cells(i, k).Value = Sheets(Sheet3.Name).Range("A3").Value
+   
+   ElseIf Worksheets("Sheet1").Cells(i, k).Value >= 60 Then
+   Worksheets("Sheet2").Cells(i, k).Value = Sheets(Sheet3.Name).Range("A4").Value
+   
+   ElseIf Worksheets("Sheet1").Cells(i, k).Value >= 50 Then
+   Worksheets("Sheet2").Cells(i, k).Value = Sheets(Sheet3.Name).Range("A5").Value
+   
+   ElseIf Worksheets("Sheet1").Cells(i, k).Value <= 49 Then
+   Worksheets("Sheet2").Cells(i, k).Value = Sheets(Sheet3.Name).Range("A6").Value
+   Worksheets("Sheet2").Cells(i, k).Interior.ColorIndex = 3 ' Set background read
+  
+   End If
+ 
+  Next i
+
+Next k
+
+MsgBox "Done"
+
+End Sub
+
+Sub SendMail()
+    Dim objEmail
+    Dim mailBody As String
+
+    Const cdoSendUsingPort = 2  ' Send the message using SMTP
+    Const cdoBasicAuth = 1      ' Clear-text authentication
+    Const cdoTimeout = 100      ' Timeout for SMTP in seconds
+
+     mailServer = "smtp.gmail.com"
+     SMTPport = 465     '25 'SMTPport = 465
+     mailusername = "laggnaimtehan@gmail.com"
+     mailpassword = "LoLo8787#"
+     ''''''''
+     
+     Dim n As Integer
+     
+     n = Application.WorksheetFunction.CountA(Range("b:b"))
+     
+     For i = 2 To n
+     
+     mailto = Worksheets("Sheet2").Range("b" & i).Value
+     mailSubject = Worksheets("Sheet2").Range("m" & 2).Value
+     mailBody = Worksheets("Sheet2").Range("m" & 3) & Worksheets("Sheet2").Range("a" & i) & "," & vbCrLf & _
+                Range("m" & 4) & vbCrLf & _
+                Worksheets("Sheet2").Range("c" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("c" & i) & vbCrLf & _
+                Worksheets("Sheet2").Range("d" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("d" & i) & vbCrLf & _
+                Worksheets("Sheet2").Range("e" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("e" & i) & vbCrLf & _
+                Worksheets("Sheet2").Range("f" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("f" & i) & vbCrLf & _
+                Worksheets("Sheet2").Range("g" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("g" & i) & vbCrLf & _
+                Worksheets("Sheet2").Range("h" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("h" & i) & vbCrLf & _
+                Worksheets("Sheet2").Range("i" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("i" & i) & vbCrLf & _
+                Worksheets("Sheet2").Range("j" & 1) & "  " & ":-" & "  " & "  " & Worksheets("Sheet2").Range("j" & i)
+
+    Set objEmail = CreateObject("CDO.Message")
+    Set objConf = objEmail.Configuration
+    Set objFlds = objConf.Fields
+
+    With objFlds
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = cdoSendUsingPort
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = mailServer
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = SMTPport
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = True
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = cdoTimeout
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = cdoBasicAuth
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = mailusername
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = mailpassword
+    .Update
+    End With
+
+    objEmail.To = mailto
+    objEmail.From = mailusername
+    objEmail.Subject = mailSubject
+    objEmail.HTMLBody = StringToHTML(mailBody)
+    objEmail.HTMLBodyPart.Charset = "utf-8"
+    objEmail.TextBodyPart.Charset = "utf-8"
+    objEmail.BodyPart.Charset = "utf-8"
+    objEmail.Send
+
+    Set objFlds = Nothing
+    Set objConf = Nothing
+    Set objEmail = Nothing
+    Next i
+    
+    MsgBox "Emails sent Success"
+    
+    If (Not (objEmail Is Nothing)) Then Set objEmail = Nothing
+    
+    Exit Sub
+
+IFErrorMail:
+
+ If (Not (objEmail Is Nothing)) Then Set objEmail = Nothing
+ 
+ MsgBox "Error Mail could not be sent"
+
+End Sub
+
+Function StringToHTML(sStr As String) As String
+    sStr = Replace(sStr, Chr(10), "<br/>")
+    sStr = Replace(sStr, Chr(13), "<br/>")
+    sStr = Replace(sStr, Chr(11), "<br/>")
+    sStr = Replace(sStr, Chr(10), "<br/>")
+    sStr = Replace(sStr, Chr(10), "<br/>")
+    sStr = Replace(sStr, Chr(10), "<br/>")
+    sStr = Replace(sStr, Chr(10), "<br/>")
+    sStr = Replace(sStr, Chr(10), "<br/>")
+    StringToHTML = "<!doctype html><html lang=""en""><body><p>"
+    StringToHTML = StringToHTML & sStr
+    StringToHTML = StringToHTML & "</p></body></html>"
+End Function
+
+
+
+
+
