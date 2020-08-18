@@ -47,8 +47,8 @@ Sub SendMail()
 
      mailServer = "smtp.gmail.com"
      SMTPport = 465     '25 'SMTPport = 465
-     mailusername = "laggnaimtehan@gmail.com"
-     mailpassword = "LoLo8787#"
+     mailusername = "*******@gmail.com"
+     mailpassword = "******"
      ''''''''
      
      Dim n As Integer
