@@ -39,6 +39,7 @@ End Sub
 Sub SendMail()
     Dim objEmail
     Dim mailBody As String
+    Dim pctdone As Single  ' Progress bar
 
     Const cdoSendUsingPort = 2  ' Send the message using SMTP
     Const cdoBasicAuth = 1      ' Clear-text authentication
@@ -51,11 +52,16 @@ Sub SendMail()
      ''''''''
      
      Dim n As Integer
-     
+    
      n = Application.WorksheetFunction.CountA(Range("b:b"))
      
+     '(Step 1) Display your Progress Bar
+       ufProgress.LabelProgress.Width = 0
+       ufProgress.Show
+       
+
      For i = 2 To n
-     
+       
      mailto = Worksheets("Sheet2").Range("b" & i).Value
      mailSubject = Worksheets("Sheet2").Range("m" & 2).Value
      mailBody = Worksheets("Sheet2").Range("m" & 3) & Worksheets("Sheet2").Range("a" & i) & "," & vbCrLf & _
@@ -85,6 +91,16 @@ Sub SendMail()
     .Update
     End With
 
+     '(Step 2) Periodically update progress bar
+    pctdone = i / n
+    
+    With ufProgress
+        .LabelCaption.Caption = "Processing Email Sending " & i & " of " & n & "  Student "
+        .LabelProgress.Width = pctdone * (.FrameProgress.Width)
+    End With
+    
+    DoEvents
+    
     objEmail.To = mailto
     objEmail.From = mailusername
     objEmail.Subject = mailSubject
@@ -97,6 +113,10 @@ Sub SendMail()
     Set objFlds = Nothing
     Set objConf = Nothing
     Set objEmail = Nothing
+    
+    '(Step 3) Close the progress bar when you're done
+    If i = n Then Unload ufProgress
+    
     Next i
     
     MsgBox "Emails sent Success"
